@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="page_title">
+        <item>Friend Suggestion</item>
+        <item>Events</item>
+    </string-array>
+
+    <array name="page_icon">
+        <item>@drawable/human_greeting</item>
+        <item>@drawable/calendar_white</item>
+    </array>
+
+    <string-array name="hobby_page_title">
+        <item>Your Hobbies</item>
+        <item>All Hobbies</item>
+    </string-array>
+
+    <string-array name="event_page_title">
+        <item>Your Events</item>
+        <item>All Events</item>
+    </string-array>
+
+</resources>
