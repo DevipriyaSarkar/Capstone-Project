@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,6 +30,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.friendmatch_frontend.friendmatch.R;
 import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,11 +66,35 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mNameView, mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private String name, email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    try {
+                        registerUser(name, email, password);
+                    } catch (MalformedURLException | URISyntaxException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "Error: " + e.getMessage());
+                    }
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -91,6 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
     }
 
 
@@ -107,9 +138,9 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String name = mNameView.getText().toString();
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        name = mNameView.getText().toString();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -150,13 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            try {
-                registerUser(name, email, password);
-            } catch (MalformedURLException | URISyntaxException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Error: " + e.getMessage());
-            }
+            createAccount(email, password);
         }
     }
 
@@ -214,6 +239,8 @@ public class RegisterActivity extends AppCompatActivity {
      */
     public void registerUser(final String mName, final String mEmail, final String mPassword) throws MalformedURLException,
             URISyntaxException {
+
+        showProgress(true);
 
         String urlString = SERVER_URL + "/sign_up?inputName=" + mName
                 + "&inputEmail=" + mEmail + "&inputPassword=" + mPassword;
@@ -388,5 +415,43 @@ public class RegisterActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(jsonObjReq);
     }
 
-}
+    private void createAccount(String email, String password) {
+        Log.d(TAG, "createAccount:" + email);
 
+        showProgress(true);
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "createUserWithEmail:failed", task.getException());
+                            Toast.makeText(getApplicationContext(), R.string.error_incorrect_credentials,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        showProgress(false);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+}

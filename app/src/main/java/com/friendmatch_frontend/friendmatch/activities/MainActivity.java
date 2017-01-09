@@ -38,6 +38,8 @@ import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.fragments.EventSuggestionFragment;
 import com.friendmatch_frontend.friendmatch.fragments.FriendSuggestionFragment;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +47,8 @@ import org.json.JSONObject;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import static com.friendmatch_frontend.friendmatch.application.AppController.SERVER_URL;
 
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     private TypedArray pageIcon;
     private NavigationView navigationView;
     private ProgressDialog pDialog;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         updateNavUserInfo();
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
     }
 
     @Override
@@ -281,6 +303,8 @@ public class MainActivity extends AppCompatActivity
 
         showProgressDialog();
 
+        mAuth.signOut();
+
         String urlString = SERVER_URL + "/logout";
 
         // handle cookies
@@ -336,6 +360,20 @@ public class MainActivity extends AppCompatActivity
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     private void showProgressDialog() {

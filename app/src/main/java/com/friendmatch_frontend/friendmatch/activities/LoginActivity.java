@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,6 +31,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.friendmatch_frontend.friendmatch.R;
 import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,22 +59,43 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
-
-    // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
     private SharedPreferences sharedPreferences;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private String email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    try {
+                        validateUser(email, password);
+                    } catch (MalformedURLException | URISyntaxException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "Error: " + e.getMessage());
+                    }
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -99,13 +126,9 @@ public class LoginActivity extends AppCompatActivity {
         String user_email = sharedPreferences.getString("email", null);
         if (user_email != null) {
             String user_password = sharedPreferences.getString("password", null);
-            showProgress(true);
-            try {
-                validateUser(user_email, user_password);
-            } catch (MalformedURLException | URISyntaxException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Error: " + e.getMessage());
-            }
+            email = user_email;
+            password = user_password;
+            signIn(user_email, user_password);
         }
 
         Button registerButton = (Button) findViewById(R.id.register_button);
@@ -117,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
 
@@ -132,8 +156,8 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -163,13 +187,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            try {
-                validateUser(email, password);
-            } catch (MalformedURLException | URISyntaxException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Error: " + e.getMessage());
-            }
+            signIn(email, password);
         }
     }
 
@@ -222,6 +240,8 @@ public class LoginActivity extends AppCompatActivity {
      * the user.
      */
     public void validateUser(final String mEmail, final String mPassword) throws MalformedURLException, URISyntaxException {
+
+        showProgress(true);
 
         String urlString = SERVER_URL + "/validate_login?inputEmail="
                 + mEmail + "&inputPassword=" + mPassword;
@@ -308,5 +328,42 @@ public class LoginActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(jsonObjReq);
     }
 
-}
+    private void signIn(String email, String password) {
+        Log.d(TAG, "signIn:" + email);
 
+        showProgress(true);
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "signInWithEmail:failed", task.getException());
+                            Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        showProgress(false);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+}
