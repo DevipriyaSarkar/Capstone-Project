@@ -14,4 +14,10 @@
     <dimen name="button_margin">5dp</dimen>
     <dimen name="welcome_padding">10dp</dimen>
     <dimen name="splash_logo_dimen">150dp</dimen>
+
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_header_text_padding">8dp</dimen>
+    <dimen name="widget_header_padding">5dp</dimen>
+    <dimen name="widget_layout_dimen">32dp</dimen>
+    <dimen name="widget_empty_view_text_size">20sp</dimen>
 </resources>

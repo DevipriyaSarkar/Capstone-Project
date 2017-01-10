@@ -332,6 +332,8 @@ public class UserEventFragment extends Fragment {
 
     // add events that the user is supposed to attend today
     private void storeEventsToDB(ArrayList<Event> eventArrayList) {
+        Log.d(TAG, "storing todays events to db");
+
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String dateToday = df.format(c.getTime());

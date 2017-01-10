@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRow"
+    android:layout_margin="@dimen/card_padding"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/widgetEventName"
+        android:padding="2dp"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/widgetEventCity"
+        android:padding="2dp"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/map_marker_black"
+        android:drawableStart="@drawable/map_marker_black" />
+</LinearLayout>

@@ -5,4 +5,6 @@
     <color name="colorPrimaryLight">#D7CCC8</color>
     <color name="colorAccent">#FF5252</color>
     <color name="colorPrimaryText">#000000</color>
+    <color name="light_gray_widget_bg">#BBDEDFDE</color>
+    <color name="light_gray_widget_header_bg">#AADEDFDE</color>
 </resources>

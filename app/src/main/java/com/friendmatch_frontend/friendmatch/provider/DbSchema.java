@@ -2,7 +2,7 @@ package com.friendmatch_frontend.friendmatch.provider;
 
 //A helper interface which defines constants for work with the DB.
 
-interface DbSchema {
+public interface DbSchema {
 
     String DB_NAME = "friend_match_events.db";
 
