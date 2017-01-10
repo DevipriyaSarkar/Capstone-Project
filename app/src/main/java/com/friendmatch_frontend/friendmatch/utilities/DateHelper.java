@@ -11,8 +11,8 @@ public class DateHelper {
 
     public DateHelper(String date) {
         this.date = date;
-        this.shortPattern = "yyyy-MM-dd";
-        this.longPattern = "dd MMM, yyyy";
+        this.shortPattern = "yyyy-MM-dd";   // how date is received from API
+        this.longPattern = "dd MMM, yyyy";  // how we format to display
     }
 
     public void setShortPattern(String shortPattern) {

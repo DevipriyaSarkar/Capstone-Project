@@ -69,6 +69,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
+
+        <provider
+            android:name=".provider.EventsProvider"
+            android:authorities="com.friendmatch_frontend.friendmatch"
+            android:exported="false" />
     </application>
 
 </manifest>

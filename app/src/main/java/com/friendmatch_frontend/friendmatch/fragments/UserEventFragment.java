@@ -1,6 +1,7 @@
 package com.friendmatch_frontend.friendmatch.fragments;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,9 +35,17 @@ import org.json.JSONObject;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import static com.friendmatch_frontend.friendmatch.application.AppController.SERVER_URL;
+import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.CITY;
+import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.CONTENT_URI;
+import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.DATE;
+import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.EVENT_ID;
+import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.EVENT_NAME;
 
 public class UserEventFragment extends Fragment {
 
@@ -120,6 +129,8 @@ public class UserEventFragment extends Fragment {
                                     eventLayout.setVisibility(View.GONE);
                                     eventError.setVisibility(View.VISIBLE);
                                     eventError.setText(R.string.event_empty_error);
+                                } else {
+                                    storeEventsToDB(eventArrayList);
                                 }
 
                                 RecyclerView eventList = (RecyclerView) userEventView.findViewById(R.id.eventList);
@@ -131,36 +142,36 @@ public class UserEventFragment extends Fragment {
 
                                 eventList.addOnItemTouchListener(new RecyclerViewClickListener(getContext(),
                                         new RecyclerViewClickListener.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(View view, final int position) {
+                                            @Override
+                                            public void onItemClick(View view, final int position) {
 
-                                        // ask if they wanna remove that event
-                                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
+                                                // ask if they wanna remove that event
+                                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
 
-                                        if (eventArrayList.get(position).isAttending()) {
+                                                if (eventArrayList.get(position).isAttending()) {
 
-                                            alertDialogBuilder.setTitle(R.string.remove_event_dialog_title);
-                                            alertDialogBuilder.setMessage(R.string.remove_event_dialog_message);
-                                            alertDialogBuilder.setPositiveButton(R.string.dialog_positive_button,
-                                                    new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface arg0, int arg1) {
-                                                            removeEvent(eventArrayList.get(position));
-                                                        }
-                                                    });
-                                            alertDialogBuilder.setNegativeButton(R.string.dialog_negative_button,
-                                                    new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            // do nothing
-                                                        }
-                                                    });
-                                            AlertDialog alertDialog = alertDialogBuilder.create();
-                                            alertDialog.show();
-                                        }
+                                                    alertDialogBuilder.setTitle(R.string.remove_event_dialog_title);
+                                                    alertDialogBuilder.setMessage(R.string.remove_event_dialog_message);
+                                                    alertDialogBuilder.setPositiveButton(R.string.dialog_positive_button,
+                                                            new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface arg0, int arg1) {
+                                                                    removeEvent(eventArrayList.get(position));
+                                                                }
+                                                            });
+                                                    alertDialogBuilder.setNegativeButton(R.string.dialog_negative_button,
+                                                            new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                                    // do nothing
+                                                                }
+                                                            });
+                                                    AlertDialog alertDialog = alertDialogBuilder.create();
+                                                    alertDialog.show();
+                                                }
 
-                                    }
-                                }));
+                                            }
+                                        }));
 
                                 hideProgressDialog();
 
@@ -316,6 +327,25 @@ public class UserEventFragment extends Fragment {
     private void hideProgressDialog() {
         if (pDialog.isShowing()) {
             pDialog.dismiss();
+        }
+    }
+
+    // add events that the user is supposed to attend today
+    private void storeEventsToDB(ArrayList<Event> eventArrayList) {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        String dateToday = df.format(c.getTime());
+
+        for (Event event : eventArrayList) {
+            if (event.getEventDate().equals(dateToday)) {
+                ContentValues values = new ContentValues();
+                values.put(EVENT_ID, event.getEventID());
+                values.put(EVENT_NAME, event.getEventName());
+                values.put(CITY, event.getEventCity());
+                values.put(DATE, event.getEventDate());
+
+                getContext().getContentResolver().insert(CONTENT_URI, values);
+            }
         }
     }
 
