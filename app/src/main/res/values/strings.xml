@@ -128,7 +128,7 @@
     <string name="local_host_address_empty_error">Please specify IP address</string>
     <string name="local_host_address_incorrect_error">Invalid IP Address</string>
     <string name="ip_address_allowed_digits">0123456789.:</string>
-    <string name="splash_logo_content_desc">Friend Match Logo</string>
+    <string name="logo_content_desc">Friend Match Logo</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="widget_header">Your Events Today</string>
     <string name="empty_widget_string">Relax. You have no events today.</string>

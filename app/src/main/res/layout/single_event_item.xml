@@ -27,7 +27,6 @@
 
             <TextView
                 android:id="@+id/eventName"
-                android:text="Event Name"
                 android:padding="2dp"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:layout_width="match_parent"
@@ -35,7 +34,6 @@
 
             <TextView
                 android:id="@+id/eventDate"
-                android:text="Event Name"
                 android:padding="2dp"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
@@ -46,7 +44,6 @@
 
             <TextView
                 android:id="@+id/eventCity"
-                android:text="Event Name"
                 android:padding="2dp"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:layout_width="match_parent"

@@ -32,7 +32,7 @@
             android:horizontalSpacing="@dimen/friend_grid_spacing"
             android:verticalSpacing="@dimen/friend_grid_spacing"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></com.friendmatch_frontend.friendmatch.utilities.ExpandableHeightGridView>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

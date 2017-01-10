@@ -22,7 +22,7 @@
             android:layout_height="@dimen/splash_logo_dimen"
             android:layout_gravity="center"
             android:src="@drawable/ic_launcher_web"
-            android:contentDescription="@string/splash_logo_content_desc" />
+            android:contentDescription="@string/logo_content_desc" />
 
         <TextView
             android:text="@string/hello_welcome_to_friend_match"
