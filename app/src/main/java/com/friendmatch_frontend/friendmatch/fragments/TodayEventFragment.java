@@ -16,16 +16,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.friendmatch_frontend.friendmatch.R;
-import com.friendmatch_frontend.friendmatch.adapters.TodayEventAdapter;
+import com.friendmatch_frontend.friendmatch.adapters.TodayEventCursorAdapter;
 
 import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.CONTENT_URI;
 import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.EVENT_NAME;
 
 public class TodayEventFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int CURSOR_LOADER_ID = 0;
     private final String TAG = getClass().getSimpleName();
     RecyclerView eventList;
-    TodayEventAdapter todayEventAdapter;
+    TodayEventCursorAdapter todayEventCursorAdapter;
     View todayEventView;
     LinearLayout eventLayout;
     TextView eventError;
@@ -51,7 +52,7 @@ public class TodayEventFragment extends Fragment implements LoaderManager.Loader
         eventList.setHasFixedSize(true);
         eventList.setLayoutManager(manager);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         // Inflate the layout for this fragment
         return view;
@@ -72,13 +73,13 @@ public class TodayEventFragment extends Fragment implements LoaderManager.Loader
             eventError.setVisibility(View.VISIBLE);
             eventError.setText(R.string.no_event_today_message);
         } else {
-            todayEventAdapter = new TodayEventAdapter(getContext(), data);
-            eventList.setAdapter(todayEventAdapter);
+            todayEventCursorAdapter = new TodayEventCursorAdapter(getContext(), data);
+            eventList.setAdapter(todayEventCursorAdapter);
         }
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
-
+        todayEventCursorAdapter.swapCursor(null);
     }
 }

@@ -2,6 +2,7 @@ package com.friendmatch_frontend.friendmatch.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,23 +11,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.friendmatch_frontend.friendmatch.R;
-import com.friendmatch_frontend.friendmatch.models.Event;
 import com.friendmatch_frontend.friendmatch.utilities.DateHelper;
-
-import java.util.ArrayList;
 
 import static com.friendmatch_frontend.friendmatch.provider.DbSchema.COL_CITY;
 import static com.friendmatch_frontend.friendmatch.provider.DbSchema.COL_DATE;
 import static com.friendmatch_frontend.friendmatch.provider.DbSchema.COL_EVENT_NAME;
 
-public class TodayEventAdapter extends RecyclerView.Adapter<TodayEventAdapter.MyViewHolder> {
+public class TodayEventCursorAdapter extends RecyclerView.Adapter<TodayEventCursorAdapter.MyViewHolder> {
 
     private Context context;
     private Cursor cursor;
+    private DataSetObserver dataSetObserver;
 
-    public TodayEventAdapter(Context context, Cursor cursor) {
+    public TodayEventCursorAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.cursor = cursor;
+        this.dataSetObserver = new NotifyingDataSetObserver();
+        cursor.registerDataSetObserver(dataSetObserver);
     }
 
     @Override
@@ -60,6 +61,38 @@ public class TodayEventAdapter extends RecyclerView.Adapter<TodayEventAdapter.My
             eventDate = (TextView) itemView.findViewById(R.id.eventDate);
             eventCity = (TextView) itemView.findViewById(R.id.eventCity);
             eventImage = (ImageView) itemView.findViewById(R.id.eventImage);
+        }
+    }
+
+    public Cursor swapCursor(Cursor newCursor){
+        if (newCursor == cursor){
+            return null;
+        }
+        final Cursor oldCursor = cursor;
+        if (oldCursor != null && dataSetObserver != null){
+            oldCursor.unregisterDataSetObserver(dataSetObserver);
+        }
+        cursor = newCursor;
+        if (cursor != null){
+            if (dataSetObserver != null){
+                cursor.registerDataSetObserver(dataSetObserver);
+            }
+            notifyDataSetChanged();
+        } else{
+            notifyDataSetChanged();
+        }
+        return oldCursor;
+    }
+
+    private class NotifyingDataSetObserver extends DataSetObserver{
+        @Override public void onChanged() {
+            super.onChanged();
+            notifyDataSetChanged();
+        }
+
+        @Override public void onInvalidated() {
+            super.onInvalidated();
+            notifyDataSetChanged();
         }
     }
 }

@@ -76,11 +76,12 @@
             android:exported="false" />
 
         <receiver
-            android:icon="@mipmap/ic_launcher"
-            android:name=".widget.EventsWidgetProvider" >
-            <intent-filter >
+            android:name=".widget.EventsWidgetProvider"
+            android:icon="@mipmap/ic_launcher">
+            <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/event_widget_info" />
@@ -90,6 +91,17 @@
             android:name=".widget.EventsWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <service
+            android:name=".services.EventsTodayTaskService"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".services.EventsTodayIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

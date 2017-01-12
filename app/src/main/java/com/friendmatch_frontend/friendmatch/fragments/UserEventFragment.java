@@ -1,7 +1,6 @@
 package com.friendmatch_frontend.friendmatch.fragments;
 
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,17 +34,9 @@ import org.json.JSONObject;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 import static com.friendmatch_frontend.friendmatch.application.AppController.SERVER_URL;
-import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.CITY;
-import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.CONTENT_URI;
-import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.DATE;
-import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.EVENT_ID;
-import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.EVENT_NAME;
 
 public class UserEventFragment extends Fragment {
 
@@ -129,8 +120,6 @@ public class UserEventFragment extends Fragment {
                                     eventLayout.setVisibility(View.GONE);
                                     eventError.setVisibility(View.VISIBLE);
                                     eventError.setText(R.string.event_empty_error);
-                                } else {
-                                    storeEventsToDB(eventArrayList);
                                 }
 
                                 RecyclerView eventList = (RecyclerView) userEventView.findViewById(R.id.eventList);
@@ -327,27 +316,6 @@ public class UserEventFragment extends Fragment {
     private void hideProgressDialog() {
         if (pDialog.isShowing()) {
             pDialog.dismiss();
-        }
-    }
-
-    // add events that the user is supposed to attend today
-    private void storeEventsToDB(ArrayList<Event> eventArrayList) {
-        Log.d(TAG, "storing todays events to db");
-
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        String dateToday = df.format(c.getTime());
-
-        for (Event event : eventArrayList) {
-            if (event.getEventDate().equals(dateToday)) {
-                ContentValues values = new ContentValues();
-                values.put(EVENT_ID, event.getEventID());
-                values.put(EVENT_NAME, event.getEventName());
-                values.put(CITY, event.getEventCity());
-                values.put(DATE, event.getEventDate());
-
-                getContext().getContentResolver().insert(CONTENT_URI, values);
-            }
         }
     }
 

@@ -135,5 +135,6 @@
     <string name="list_name_content_desc">Event Name:</string>
     <string name="list_city_content_desc">Event City:</string>
     <string name="today_event_heading">Your Events Today</string>
+    <string name="no_internet_error">No internet available</string>
 
 </resources>

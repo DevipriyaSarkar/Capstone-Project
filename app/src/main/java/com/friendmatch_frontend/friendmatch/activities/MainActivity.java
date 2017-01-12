@@ -1,11 +1,14 @@
 package com.friendmatch_frontend.friendmatch.activities;
 
+import android.app.IntentService;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -38,10 +41,15 @@ import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.fragments.EventSuggestionFragment;
 import com.friendmatch_frontend.friendmatch.fragments.FriendSuggestionFragment;
 import com.friendmatch_frontend.friendmatch.fragments.TodayEventFragment;
+import com.friendmatch_frontend.friendmatch.services.EventsTodayIntentService;
+import com.friendmatch_frontend.friendmatch.services.EventsTodayTaskService;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -75,6 +83,19 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // The intent service is for executing immediate pulls
+        // GCMTaskService can only schedule tasks, they cannot execute immediately
+        Intent intentService = new Intent(this, EventsTodayIntentService.class);
+        if (savedInstanceState == null){
+            // Run the initialize task service so that some stocks appear upon an empty database
+            intentService.putExtra("TAG", "INIT");
+            if (isInternetAvailable()){
+                startService(intentService);
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.no_internet_error, Toast.LENGTH_LONG).show();
+            }
+        }
 
         pageTitle = getResources().getStringArray(R.array.page_title);
         pageIcon = getResources().obtainTypedArray(R.array.page_icon);
@@ -118,6 +139,23 @@ public class MainActivity extends AppCompatActivity
         AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+
+        if (isInternetAvailable()){
+            long period = 86400L;
+            long flex = 10L;
+            String periodicTag = "Periodic";
+
+            // create a periodic task to pull current day's event
+            PeriodicTask periodicTask = new PeriodicTask.Builder()
+                    .setService(EventsTodayTaskService.class)
+                    .setPeriod(period)
+                    .setFlex(flex)
+                    .setTag(periodicTag)
+                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+                    .build();
+
+            GcmNetworkManager.getInstance(this).schedule(periodicTask);
+        }
 
     }
 
@@ -397,6 +435,13 @@ public class MainActivity extends AppCompatActivity
         if (pDialog.isShowing()) {
             pDialog.dismiss();
         }
+    }
+
+    //check for internet connectivity
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
 }
