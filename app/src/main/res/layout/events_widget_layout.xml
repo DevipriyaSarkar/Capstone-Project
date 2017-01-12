@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/widget_margin"
-    android:background="@color/light_gray_widget_bg"
+    android:background="@color/colorPrimaryLight"
     android:orientation="vertical" >
 
     <!-- Widget Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/light_gray_widget_header_bg"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:background="@color/colorPrimary"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/widget_header_padding"
         android:paddingStart="@dimen/widget_header_padding"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="@string/widget_header"
             android:layout_gravity="center_vertical"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
             android:paddingStart="@dimen/widget_header_text_padding"
@@ -41,7 +41,8 @@
     <ListView
         android:id="@+id/widgetList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/card_padding">
     </ListView>
 
     <!-- Empty view is show if list items are empty -->
@@ -53,6 +54,7 @@
         android:text="@string/no_event_today_message"
         android:textColor="@android:color/black"
         android:textSize="@dimen/widget_empty_view_text_size"
+        android:padding="@dimen/card_padding"
         android:visibility="gone" />
 
 </LinearLayout>
