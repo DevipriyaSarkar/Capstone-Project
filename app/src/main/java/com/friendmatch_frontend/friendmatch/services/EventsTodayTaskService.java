@@ -1,5 +1,7 @@
 package com.friendmatch_frontend.friendmatch.services;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,6 +20,7 @@ import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.models.Event;
 import com.friendmatch_frontend.friendmatch.provider.EventsContract;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
+import com.friendmatch_frontend.friendmatch.widget.EventsWidgetProvider;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
@@ -116,6 +119,8 @@ public class EventsTodayTaskService extends GcmTaskService {
 
             // Adding request to request queue
             AppController.getInstance().addToRequestQueue(jsonObjReq);
+            updateWidget();
+
         } else if (taskParams.getTag().equals("UPDATE")) {
             if (taskParams.getExtras().getString("ACTION").equals("ADD")) {
                 // add event to db
@@ -126,12 +131,14 @@ public class EventsTodayTaskService extends GcmTaskService {
                 values.put(CITY, event.getEventCity());
                 values.put(DATE, event.getEventDate());
                 getContentResolver().insert(CONTENT_URI, values);
+                updateWidget();
 
             } else if (taskParams.getExtras().getString("ACTION").equals("DELETE")) {
                 // delete event from db
                 Event event = taskParams.getExtras().getParcelable("EVENT");
                 Uri delUri = ContentUris.withAppendedId(CONTENT_URI, event.getEventID());
                 getContentResolver().delete(delUri, null, null);
+                updateWidget();
             }
         }
         return result;
@@ -158,5 +165,17 @@ public class EventsTodayTaskService extends GcmTaskService {
                 context.getContentResolver().insert(CONTENT_URI, values);
             }
         }
+
+        updateWidget();
+
+    }
+
+    private void updateWidget() {
+        Intent intent = new Intent(getApplicationContext(), EventsWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int appWidgetIds[] = AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), EventsWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        sendBroadcast(intent);
     }
 }
