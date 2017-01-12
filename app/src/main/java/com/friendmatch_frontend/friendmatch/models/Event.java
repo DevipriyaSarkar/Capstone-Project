@@ -1,6 +1,9 @@
 package com.friendmatch_frontend.friendmatch.models;
 
-public class Event {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Event implements Parcelable {
     private int eventID;
     private String eventName;
     private String eventCity;
@@ -76,4 +79,38 @@ public class Event {
         return isAttending;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(eventID);
+        parcel.writeString(eventName);
+        parcel.writeString(eventCity);
+        parcel.writeString(eventDate);
+        parcel.writeInt(eventImg);
+    }
+
+    // Creator
+    public static final Parcelable.Creator<Event> CREATOR
+            = new Parcelable.Creator<Event>() {
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+    //De-parcel object
+    public Event(Parcel in) {
+        this.eventID = in.readInt();
+        this.eventName = in.readString();
+        this.eventCity = in.readString();
+        this.eventDate = in.readString();
+        this.eventImg = in.readInt();
+    }
 }

@@ -1,8 +1,10 @@
 package com.friendmatch_frontend.friendmatch.services;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -14,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.friendmatch_frontend.friendmatch.R;
 import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.models.Event;
+import com.friendmatch_frontend.friendmatch.provider.EventsContract;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
@@ -113,6 +116,23 @@ public class EventsTodayTaskService extends GcmTaskService {
 
             // Adding request to request queue
             AppController.getInstance().addToRequestQueue(jsonObjReq);
+        } else if (taskParams.getTag().equals("UPDATE")) {
+            if (taskParams.getExtras().getString("ACTION").equals("ADD")) {
+                // add event to db
+                Event event = taskParams.getExtras().getParcelable("EVENT");
+                ContentValues values = new ContentValues();
+                values.put(EVENT_ID, event.getEventID());
+                values.put(EVENT_NAME, event.getEventName());
+                values.put(CITY, event.getEventCity());
+                values.put(DATE, event.getEventDate());
+                getContentResolver().insert(CONTENT_URI, values);
+
+            } else if (taskParams.getExtras().getString("ACTION").equals("DELETE")) {
+                // delete event from db
+                Event event = taskParams.getExtras().getParcelable("EVENT");
+                Uri delUri = ContentUris.withAppendedId(CONTENT_URI, event.getEventID());
+                getContentResolver().delete(delUri, null, null);
+            }
         }
         return result;
     }

@@ -24,7 +24,7 @@ public class EventsTodayIntentService extends IntentService {
         Bundle args = new Bundle();
         if (intent.getStringExtra("TAG").equals("UPDATE")){
             args.putString("ACTION", intent.getStringExtra("ACTION"));
-            args.putString("EVENT_ID", intent.getStringExtra("EVENT_ID"));
+            args.putParcelable("EVENT", intent.getParcelableExtra("EVENT"));
         }
         // We can call OnRunTask from the intent service to force it to run immediately instead of
         // scheduling a task.

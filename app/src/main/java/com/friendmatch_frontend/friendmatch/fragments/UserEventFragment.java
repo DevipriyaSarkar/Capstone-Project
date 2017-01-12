@@ -2,6 +2,7 @@ package com.friendmatch_frontend.friendmatch.fragments;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import com.friendmatch_frontend.friendmatch.R;
 import com.friendmatch_frontend.friendmatch.adapters.EventListAdapter;
 import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.models.Event;
+import com.friendmatch_frontend.friendmatch.services.EventsTodayIntentService;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
 import com.friendmatch_frontend.friendmatch.utilities.RecyclerViewClickListener;
 
@@ -34,7 +36,10 @@ import org.json.JSONObject;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import static com.friendmatch_frontend.friendmatch.application.AppController.SERVER_URL;
 
@@ -50,6 +55,7 @@ public class UserEventFragment extends Fragment {
     LinearLayout eventLayout;
     TextView eventError;
     TextView eventSectionHeading;
+    String dateToday;
 
     public UserEventFragment() {
         // Required empty public constructor
@@ -59,6 +65,10 @@ public class UserEventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_event, container, false);
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        dateToday = df.format(c.getTime());
 
         // initialize progress dialog
         pDialog = new ProgressDialog(getContext());
@@ -246,6 +256,16 @@ public class UserEventFragment extends Fragment {
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
 
+        // check if it's today - if so - add to db
+        if (event.getEventDate().equals(dateToday)) {
+            Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("TAG", "UPDATE");
+            bundle.putString("ACTION", "ADD");
+            bundle.putParcelable("EVENT", event);
+            intentService.putExtras(bundle);
+            getContext().startService(intentService);
+        }
     }
 
     private void removeEvent(final Event event) {
@@ -305,6 +325,16 @@ public class UserEventFragment extends Fragment {
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
 
+        // check if it's today - if so - remove from db
+        if (event.getEventDate().equals(dateToday)) {
+            Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("TAG", "UPDATE");
+            bundle.putString("ACTION", "DELETE");
+            bundle.putParcelable("EVENT", event);
+            intentService.putExtras(bundle);
+            getContext().startService(intentService);
+        }
     }
 
     private void showProgressDialog() {
