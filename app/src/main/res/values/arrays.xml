@@ -4,11 +4,13 @@
     <string-array name="page_title">
         <item>Friend Suggestion</item>
         <item>Events</item>
+        <item>Today\'s Events</item>
     </string-array>
 
     <array name="page_icon">
         <item>@drawable/human_greeting</item>
         <item>@drawable/calendar_white</item>
+        <item>@drawable/clock</item>
     </array>
 
     <string-array name="hobby_page_title">

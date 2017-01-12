@@ -37,6 +37,7 @@ import com.friendmatch_frontend.friendmatch.adapters.ViewPagerAdapter;
 import com.friendmatch_frontend.friendmatch.application.AppController;
 import com.friendmatch_frontend.friendmatch.fragments.EventSuggestionFragment;
 import com.friendmatch_frontend.friendmatch.fragments.FriendSuggestionFragment;
+import com.friendmatch_frontend.friendmatch.fragments.TodayEventFragment;
 import com.friendmatch_frontend.friendmatch.utilities.PersistentCookieStore;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -66,7 +67,6 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog pDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         };
 
         MobileAds.initialize(getApplicationContext(), getString(R.string.banner_ad_unit_id));
-        adView = (AdView) findViewById(R.id.adView);
+        AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
@@ -294,6 +294,7 @@ public class MainActivity extends AppCompatActivity
         adapter.addFragment(new FriendSuggestionFragment(), pageTitle[0], pageIcon.getResourceId(0, 0));
         //noinspection ResourceType
         adapter.addFragment(new EventSuggestionFragment(), pageTitle[1], pageIcon.getResourceId(1, 0));
+        adapter.addFragment(new TodayEventFragment(), pageTitle[2], pageIcon.getResourceId(2, 0));
         viewPager.setAdapter(adapter);
     }
 
@@ -301,6 +302,7 @@ public class MainActivity extends AppCompatActivity
         tabLayout.getTabAt(0).setIcon(pageIcon.getDrawable(0));
         //noinspection ResourceType
         tabLayout.getTabAt(1).setIcon(pageIcon.getDrawable(1));
+        tabLayout.getTabAt(2).setIcon(pageIcon.getDrawable(2));
     }
 
     private void logOut() {

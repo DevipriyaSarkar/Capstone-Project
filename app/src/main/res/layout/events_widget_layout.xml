@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@string/empty_widget_string"
+        android:text="@string/no_event_today_message"
         android:textColor="@android:color/black"
         android:textSize="@dimen/widget_empty_view_text_size"
         android:visibility="gone" />

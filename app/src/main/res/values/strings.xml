@@ -131,8 +131,9 @@
     <string name="logo_content_desc">Friend Match Logo</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="widget_header">Your Events Today</string>
-    <string name="empty_widget_string">Relax. You have no events today.</string>
+    <string name="no_event_today_message">Relax. You have no events today.</string>
     <string name="list_name_content_desc">Event Name:</string>
     <string name="list_city_content_desc">Event City:</string>
+    <string name="today_event_heading">Your Events Today</string>
 
 </resources>
