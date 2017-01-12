@@ -10,9 +10,7 @@ import com.android.volley.toolbox.Volley;
 public class AppController extends Application {
 
     public static final String TAG = AppController.class.getSimpleName();
-    public static String LOCAL_IP_ADDRESS = "http://<your-local-ip-address:endpoint>";
-    public static String MY_SERVER = "http://devipriyasarkar96.pythonanywhere.com";
-    public static String SERVER_URL;
+    public static String SERVER_URL = "http://devipriyasarkar96.pythonanywhere.com";
     public static boolean FIRST_HOBBY_ENTRY = false;
 
     private RequestQueue mRequestQueue;
