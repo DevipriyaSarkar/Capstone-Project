@@ -59,7 +59,6 @@ public class HobbyActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         if (!FIRST_HOBBY_ENTRY)
             adapter.addFragment(new UserHobbyFragment(), pageTitle[0]);
-        //noinspection ResourceType
         adapter.addFragment(new AllHobbyFragment(), pageTitle[1]);
         viewPager.setAdapter(adapter);
     }

@@ -335,7 +335,6 @@ public class MainActivity extends AppCompatActivity
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FriendSuggestionFragment(), pageTitle[0], pageIcon.getResourceId(0, 0));
-        //noinspection ResourceType
         adapter.addFragment(new EventSuggestionFragment(), pageTitle[1], pageIcon.getResourceId(1, 0));
         adapter.addFragment(new TodayEventFragment(), pageTitle[2], pageIcon.getResourceId(2, 0));
         viewPager.setAdapter(adapter);
@@ -343,7 +342,6 @@ public class MainActivity extends AppCompatActivity
 
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(pageIcon.getDrawable(0));
-        //noinspection ResourceType
         tabLayout.getTabAt(1).setIcon(pageIcon.getDrawable(1));
         tabLayout.getTabAt(2).setIcon(pageIcon.getDrawable(2));
     }

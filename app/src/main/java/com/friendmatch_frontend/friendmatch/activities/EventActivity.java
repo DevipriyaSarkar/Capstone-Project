@@ -36,7 +36,6 @@ public class EventActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new UserEventFragment(), pageTitle[0]);
-        //noinspection ResourceType
         adapter.addFragment(new AllEventFragment(), pageTitle[1]);
         viewPager.setAdapter(adapter);
     }
