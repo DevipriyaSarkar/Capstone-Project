@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import static com.friendmatch_frontend.friendmatch.provider.DbSchema.COL_EVENT_ID;
 import static com.friendmatch_frontend.friendmatch.provider.EventsContract.Events.*;
 
 // The actual provider class for the events provider.
@@ -149,7 +150,7 @@ public class EventsProvider extends ContentProvider {
                 break;
             case EVENT_ID:
                 String idStr = uri.getLastPathSegment();
-                String where = EVENT_ID + " = " + idStr;
+                String where = COL_EVENT_ID + " = " + idStr;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }

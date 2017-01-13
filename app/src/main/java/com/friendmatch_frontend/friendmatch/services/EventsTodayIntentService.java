@@ -20,7 +20,7 @@ public class EventsTodayIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(EventsTodayIntentService.class.getSimpleName(), "Events Today Intent Service");
-        EventsTodayTaskService eventsTodayTaskService = new EventsTodayTaskService(this);
+        EventsTodayTaskService eventsTodayTaskService = new EventsTodayTaskService(getApplicationContext());
         Bundle args = new Bundle();
         if (intent.getStringExtra("TAG").equals("UPDATE")){
             args.putString("ACTION", intent.getStringExtra("ACTION"));

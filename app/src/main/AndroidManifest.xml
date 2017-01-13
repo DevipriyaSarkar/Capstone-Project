@@ -3,6 +3,7 @@
     package="com.friendmatch_frontend.friendmatch">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".application.AppController"
@@ -73,7 +74,10 @@
         <provider
             android:name=".provider.EventsProvider"
             android:authorities="com.friendmatch_frontend.friendmatch"
-            android:exported="false" />
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:readPermission="com.friendmatch_frontend.friendmatch.READ"
+            android:writePermission="com.friendmatch_frontend.friendmatch.WRITE"/>
 
         <receiver
             android:name=".widget.EventsWidgetProvider"

@@ -15,7 +15,7 @@ public interface DbSchema {
 
     String DDL_CREATE_TBL_EVENTS =
             "CREATE TABLE events (" +
-                    "event_id       INTEGER PRIMARY KEY, \n" +
+                    "event_id       INTEGER PRIMARY KEY NOT NULL, \n" +
                     "event_name     TEXT, \n" +
                     "event_city     TEXT, \n" +
                     "event_date     TEXT \n" +
@@ -24,7 +24,7 @@ public interface DbSchema {
     String DDL_CREATE_TRIGGER_DELETE_EVENT =
             "CREATE TRIGGER delete_event DELETE ON events \n"
                     + "begin\n"
-                    + "  delete from event where event_id = old.event_id;\n"
+                    + "  delete from events where event_id = old.event_id;\n"
                     + "end\n";
 
     String DDL_DROP_TBL_EVENT =

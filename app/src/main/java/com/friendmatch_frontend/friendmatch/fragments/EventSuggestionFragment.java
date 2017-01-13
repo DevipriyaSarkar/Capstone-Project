@@ -62,6 +62,8 @@ public class EventSuggestionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_event_suggestion, container, false);
+
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         dateToday = df.format(c.getTime());
@@ -74,7 +76,7 @@ public class EventSuggestionFragment extends Fragment {
         getEventsSuggestion(container);
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_event_suggestion, container, false);
+        return view;
     }
 
     public void getEventsSuggestion(final ViewGroup container) {
@@ -210,6 +212,18 @@ public class EventSuggestionFragment extends Fragment {
                                 eventArrayList.remove(event);
                                 eventListAdapter.notifyDataSetChanged();
                                 hideProgressDialog();
+
+                                // check if it's today - if so - add to db
+                                if (event.getEventDate().equals(dateToday)) {
+                                    Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("TAG", "UPDATE");
+                                    bundle.putString("ACTION", "ADD");
+                                    bundle.putParcelable("EVENT", event);
+                                    intentService.putExtras(bundle);
+                                    getContext().startService(intentService);
+                                }
+
                                 Toast.makeText(getContext(), R.string.add_event_success, Toast.LENGTH_SHORT).show();
                             } else {
                                 hideProgressDialog();
@@ -236,17 +250,6 @@ public class EventSuggestionFragment extends Fragment {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
-
-        // check if it's today - if so - add to db
-        if (event.getEventDate().equals(dateToday)) {
-            Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("TAG", "UPDATE");
-            bundle.putString("ACTION", "ADD");
-            bundle.putParcelable("EVENT", event);
-            intentService.putExtras(bundle);
-            getContext().startService(intentService);
-        }
 
     }
 

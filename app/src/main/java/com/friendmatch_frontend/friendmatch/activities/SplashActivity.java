@@ -44,6 +44,11 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+        } else {
+            SERVER_URL = sp.getString("SERVER_URL", SERVER_URL);
+            finish();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         }
     }
 }

@@ -103,6 +103,8 @@ public class EventsTodayTaskService extends GcmTaskService {
                                     if (!eventArrayList.isEmpty()) {
                                         storeEventsToDB(eventArrayList);
                                     }
+
+                                    updateWidget();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -119,7 +121,6 @@ public class EventsTodayTaskService extends GcmTaskService {
 
             // Adding request to request queue
             AppController.getInstance().addToRequestQueue(jsonObjReq);
-            updateWidget();
 
         } else if (taskParams.getTag().equals("UPDATE")) {
             if (taskParams.getExtras().getString("ACTION").equals("ADD")) {
@@ -130,14 +131,14 @@ public class EventsTodayTaskService extends GcmTaskService {
                 values.put(EVENT_NAME, event.getEventName());
                 values.put(CITY, event.getEventCity());
                 values.put(DATE, event.getEventDate());
-                getContentResolver().insert(CONTENT_URI, values);
+                context.getContentResolver().insert(CONTENT_URI, values);
                 updateWidget();
 
             } else if (taskParams.getExtras().getString("ACTION").equals("DELETE")) {
                 // delete event from db
                 Event event = taskParams.getExtras().getParcelable("EVENT");
                 Uri delUri = ContentUris.withAppendedId(CONTENT_URI, event.getEventID());
-                getContentResolver().delete(delUri, null, null);
+                context.getContentResolver().delete(delUri, null, null);
                 updateWidget();
             }
         }
@@ -171,11 +172,11 @@ public class EventsTodayTaskService extends GcmTaskService {
     }
 
     private void updateWidget() {
-        Intent intent = new Intent(getApplicationContext(), EventsWidgetProvider.class);
+        Intent intent = new Intent(context, EventsWidgetProvider.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int appWidgetIds[] = AppWidgetManager.getInstance(getApplication())
-                .getAppWidgetIds(new ComponentName(getApplication(), EventsWidgetProvider.class));
+        int appWidgetIds[] = AppWidgetManager.getInstance(context)
+                .getAppWidgetIds(new ComponentName(context, EventsWidgetProvider.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-        sendBroadcast(intent);
+        context.sendBroadcast(intent);
     }
 }

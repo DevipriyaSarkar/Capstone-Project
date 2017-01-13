@@ -250,6 +250,18 @@ public class AllEventFragment extends Fragment {
                                 event.setAttending(true);
                                 eventListAdapter.notifyDataSetChanged();
                                 hideProgressDialog();
+
+                                // check if it's today - if so - add to db
+                                if (event.getEventDate().equals(dateToday)) {
+                                    Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("TAG", "UPDATE");
+                                    bundle.putString("ACTION", "ADD");
+                                    bundle.putParcelable("EVENT", event);
+                                    intentService.putExtras(bundle);
+                                    getContext().startService(intentService);
+                                }
+
                                 Toast.makeText(getContext(), R.string.add_event_success, Toast.LENGTH_SHORT).show();
                             } else {
                                 hideProgressDialog();
@@ -276,17 +288,6 @@ public class AllEventFragment extends Fragment {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
-
-        // check if it's today - if so - add to db
-        if (event.getEventDate().equals(dateToday)) {
-            Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("TAG", "UPDATE");
-            bundle.putString("ACTION", "ADD");
-            bundle.putParcelable("EVENT", event);
-            intentService.putExtras(bundle);
-            getContext().startService(intentService);
-        }
 
     }
 
@@ -319,6 +320,18 @@ public class AllEventFragment extends Fragment {
                                 event.setAttending(false);
                                 eventListAdapter.notifyDataSetChanged();
                                 hideProgressDialog();
+
+                                // check if it's today - if so - remove from db
+                                if (event.getEventDate().equals(dateToday)) {
+                                    Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("TAG", "UPDATE");
+                                    bundle.putString("ACTION", "DELETE");
+                                    bundle.putParcelable("EVENT", event);
+                                    intentService.putExtras(bundle);
+                                    getContext().startService(intentService);
+                                }
+
                                 Toast.makeText(getContext(), R.string.remove_event_success, Toast.LENGTH_SHORT).show();
                             } else {
                                 hideProgressDialog();
@@ -345,17 +358,6 @@ public class AllEventFragment extends Fragment {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
-
-        // check if it's today - if so - remove from db
-        if (event.getEventDate().equals(dateToday)) {
-            Intent intentService = new Intent(getContext(), EventsTodayIntentService.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("TAG", "UPDATE");
-            bundle.putString("ACTION", "DELETE");
-            bundle.putParcelable("EVENT", event);
-            intentService.putExtras(bundle);
-            getContext().startService(intentService);
-        }
 
     }
 

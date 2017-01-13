@@ -80,6 +80,6 @@ public class TodayEventFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoaderReset(Loader loader) {
-        todayEventCursorAdapter.swapCursor(null);
+
     }
 }

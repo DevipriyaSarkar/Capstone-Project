@@ -50,6 +50,8 @@ public class FriendSuggestionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_friend_suggestion, container, false);
+
         // initialize progress dialog
         pDialog = new ProgressDialog(getContext());
         pDialog.setMessage(getString(R.string.suggestion_friend_progress_dialog_message));
@@ -58,7 +60,7 @@ public class FriendSuggestionFragment extends Fragment {
         getFriendSuggestion(container);
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_friend_suggestion, container, false);
+        return view;
     }
 
     public void getFriendSuggestion(final ViewGroup container) {

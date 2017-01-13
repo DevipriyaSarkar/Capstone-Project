@@ -86,12 +86,17 @@ public class MainActivity extends AppCompatActivity
 
         // The intent service is for executing immediate pulls
         // GCMTaskService can only schedule tasks, they cannot execute immediately
+        SharedPreferences sp = getSharedPreferences("FIRST_LAUNCH", MODE_PRIVATE);
+        boolean firstInit = sp.getBoolean("first_init", true);
         Intent intentService = new Intent(this, EventsTodayIntentService.class);
-        if (savedInstanceState == null){
+        if (firstInit){
             // Run the initialize task service so that some stocks appear upon an empty database
             intentService.putExtra("TAG", "INIT");
             if (isInternetAvailable()){
                 startService(intentService);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean("first_init", false);
+                editor.apply();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.no_internet_error, Toast.LENGTH_LONG).show();
             }
