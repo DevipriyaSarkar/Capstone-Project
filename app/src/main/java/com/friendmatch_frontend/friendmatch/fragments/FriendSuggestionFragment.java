@@ -42,6 +42,8 @@ public class FriendSuggestionFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
     ProgressDialog pDialog;
     TextView friendError;
+    ExpandableHeightGridView friendGrid;
+    FriendGridAdapter friendGridAdapter;
 
     public FriendSuggestionFragment() {
         // Required empty public constructor
@@ -56,6 +58,12 @@ public class FriendSuggestionFragment extends Fragment {
         pDialog = new ProgressDialog(getContext());
         pDialog.setMessage(getString(R.string.suggestion_friend_progress_dialog_message));
         pDialog.setCancelable(false);
+
+        friendGrid = (ExpandableHeightGridView) view.findViewById(R.id.friendGrid);
+        friendGridAdapter = new FriendGridAdapter(getContext(), new ArrayList<User>());
+        friendGrid.setAdapter(friendGridAdapter);
+        friendGrid.setExpanded(true);
+        friendGrid.setEmptyView(friendError);
 
         getFriendSuggestion(container);
 
@@ -102,10 +110,7 @@ public class FriendSuggestionFragment extends Fragment {
                                     friendError.setText(R.string.hobby_empty_error);
                                 }
 
-                                ExpandableHeightGridView friendGrid =
-                                        (ExpandableHeightGridView) container.findViewById(R.id.friendGrid);
-                                FriendGridAdapter friendGridAdapter =
-                                        new FriendGridAdapter(getContext(), friendArrayList);
+                                friendGridAdapter = new FriendGridAdapter(getContext(), friendArrayList);
                                 friendGrid.setAdapter(friendGridAdapter);
                                 friendGrid.setExpanded(true);
                                 friendGrid.setEmptyView(friendError);

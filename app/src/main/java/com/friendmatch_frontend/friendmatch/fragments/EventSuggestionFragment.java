@@ -54,6 +54,8 @@ public class EventSuggestionFragment extends Fragment {
     EventListAdapter eventListAdapter;
     int eventImageID = R.drawable.event;
     String dateToday;
+    RecyclerView eventList;
+
 
     public EventSuggestionFragment() {
         // Required empty public constructor
@@ -72,6 +74,13 @@ public class EventSuggestionFragment extends Fragment {
         pDialog = new ProgressDialog(getContext());
         pDialog.setMessage(getString(R.string.suggestion_event_progress_dialog_message));
         pDialog.setCancelable(false);
+
+        eventList = (RecyclerView) view.findViewById(R.id.eventList);
+        LinearLayoutManager manager = new LinearLayoutManager(container.getContext());
+        eventListAdapter = new EventListAdapter(container.getContext(), new ArrayList<Event>());
+        eventList.setHasFixedSize(true);
+        eventList.setLayoutManager(manager);
+        eventList.setAdapter(eventListAdapter);
 
         getEventsSuggestion(container);
 
@@ -122,7 +131,6 @@ public class EventSuggestionFragment extends Fragment {
                                     eventError.setText(R.string.event_empty_error);
                                 }
 
-                                RecyclerView eventList = (RecyclerView) container.findViewById(R.id.eventList);
                                 LinearLayoutManager manager = new LinearLayoutManager(container.getContext());
                                 eventListAdapter = new EventListAdapter(container.getContext(), eventArrayList);
                                 eventList.setHasFixedSize(true);
